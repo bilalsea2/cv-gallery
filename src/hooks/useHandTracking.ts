@@ -10,6 +10,7 @@ export interface HandData {
     pinchStrength: number;
     isThumbsUp: boolean;
     isThumbsDown: boolean;
+    isOpenPalm: boolean;
 }
 
 export interface HandTrackingState {
@@ -94,6 +95,23 @@ export function useHandTracking(videoRef: React.RefObject<HTMLVideoElement | nul
         return { isThumbsUp, isThumbsDown };
     }, []);
 
+    const detectOpenPalm = useCallback((landmarks: any[]): boolean => {
+        // Check if all fingers are extended
+        const fingerTips = [8, 12, 16, 20]; // Index, Middle, Ring, Pinky
+        const fingerPIPs = [6, 10, 14, 18];
+
+        const fingersExtended = fingerTips.every((tipIdx, i) => {
+            return landmarks[tipIdx].y < landmarks[fingerPIPs[i]].y;
+        });
+
+        // Check thumb extension
+        const thumbTip = landmarks[4];
+        const thumbMCP = landmarks[2];
+        const thumbExtended = Math.abs(thumbTip.x - thumbMCP.x) > 0.05;
+
+        return fingersExtended && thumbExtended;
+    }, []);
+
     const processResults = useCallback((results: any) => {
         const now = performance.now();
         if (now - lastProcessTime.current < 16) return; // ~60fps throttle
@@ -111,6 +129,7 @@ export function useHandTracking(videoRef: React.RefObject<HTMLVideoElement | nul
 
                 const pinchData = calculatePinch(landmarks);
                 const thumbGesture = detectThumbGesture(landmarks);
+                const isOpenPalm = detectOpenPalm(landmarks);
 
                 const handData: HandData = {
                     landmarks: landmarks.map((l: any) => ({ x: l.x, y: l.y, z: l.z })),
@@ -120,6 +139,7 @@ export function useHandTracking(videoRef: React.RefObject<HTMLVideoElement | nul
                     pinchStrength: pinchData.strength,
                     isThumbsUp: thumbGesture.isThumbsUp,
                     isThumbsDown: thumbGesture.isThumbsDown,
+                    isOpenPalm,
                 };
 
                 if (actualHandedness === 'Left') {
@@ -135,7 +155,7 @@ export function useHandTracking(videoRef: React.RefObject<HTMLVideoElement | nul
             leftHand,
             rightHand,
         }));
-    }, [calculatePinch, detectThumbGesture]);
+    }, [calculatePinch, detectThumbGesture, detectOpenPalm]);
 
     useEffect(() => {
         let mounted = true;

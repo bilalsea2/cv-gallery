@@ -127,6 +127,21 @@ export default function Home() {
         setInitialDragPos(undefined);
     }, []);
 
+    const lastOpenPalmTime = useRef(0);
+
+    // Handle "Open Palms" gesture to clear
+    useEffect(() => {
+        if (!handTracking.leftHand || !handTracking.rightHand) return;
+
+        const now = Date.now();
+        if (now - lastOpenPalmTime.current < 2000) return; // 2 second cooldown
+
+        if (handTracking.leftHand.isOpenPalm && handTracking.rightHand.isOpenPalm) {
+            handleCloseImage();
+            lastOpenPalmTime.current = now;
+        }
+    }, [handTracking.leftHand, handTracking.rightHand, handleCloseImage]);
+
     return (
         <div className="relative w-screen h-screen overflow-hidden bg-black">
             {/* Hidden video element for camera capture */}
@@ -185,6 +200,10 @@ export default function Home() {
                                     <span className="flex items-center gap-1.5">
                                         <span className="w-2 h-2 rounded-full bg-blue-400" />
                                         Left: Zoom & Pan
+                                    </span>
+                                    <span className="flex items-center gap-1.5">
+                                        <span className="text-base">✋🤚</span>
+                                        Clear
                                     </span>
                                 </div>
                             </div>

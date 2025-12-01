@@ -22,17 +22,32 @@ interface ImageGalleryProps {
 // To add your own images, place them in public/gallery/ with names like:
 // image1.jpg, image2.png, project-screenshot.jpg, certificate.pdf, etc.
 const GALLERY_IMAGES: GalleryImage[] = [
-    { id: '1', src: '/gallery/image1.jpg', title: 'Project 1' },
-    { id: '2', src: '/gallery/image2.jpg', title: 'Project 2' },
-    { id: '3', src: '/gallery/image3.jpg', title: 'Project 3' },
-    { id: '4', src: '/gallery/image4.jpg', title: 'Certificate 1' },
-    { id: '5', src: '/gallery/image5.jpg', title: 'Certificate 2' },
-    { id: '6', src: '/gallery/image6.jpg', title: 'Screenshot 1' },
-    { id: '7', src: '/gallery/image7.jpg', title: 'Screenshot 2' },
-    { id: '8', src: '/gallery/image8.jpg', title: 'Screenshot 3' },
+    { id: '1', src: '/gallery/image1.jpg', title: 'codeforces' },
+    { id: '2', src: '/gallery/image2.jpg', title: 'kep.uz' },
+    { id: '3', src: '/gallery/image3.jpg', title: 'acmp.ru' },
+    { id: '4', src: '/gallery/image4.jpg', title: 'linux' },
+    { id: '5', src: '/gallery/image5.jpg', title: 'olympiad 1' },
+    { id: '6', src: '/gallery/image6.jpg', title: 'olympiad 2' },
+    { id: '7', src: '/gallery/image7.jpg', title: 'olympiad 3' },
+    { id: '8', src: '/gallery/image8.jpg', title: 'sarmolabs' },
+    { id: '9', src: '/gallery/image9.jpg', title: 'presTechAward' },
+    { id: '10', src: '/gallery/image10.jpg', title: 'peony.uz' },
+    { id: '11', src: '/gallery/image11.gif', title: 'hackathon' },
+    { id: '12', src: '/gallery/image12.jpg', title: 'github' },
+    { id: '13', src: '/gallery/image13.jpg', title: 'almaty' },
+    { id: '14', src: '/gallery/image14.jpg', title: 'marathons' },
+    { id: '15', src: '/gallery/image15.jpg', title: 'marathons' },
+    { id: '16', src: '/gallery/image16.jpg', title: 'marathons' },
+    { id: '17', src: '/gallery/image17.jpg', title: 'run' },
+    { id: '18', src: '/gallery/image18.jpg', title: 'run' },
+    { id: '19', src: '/gallery/image19.jpg', title: 'run' },
+    { id: '20', src: '/gallery/image20.jpg', title: 'run' },
+    { id: '21', src: '/gallery/image21.jpg', title: 'run' },
+    { id: '22', src: '/gallery/image22.jpg', title: 'run' },
+    { id: '23', src: '/gallery/image23.jpg', title: 'run' },
 ];
 
-const SCROLL_SPEED = 16; // Pixels per frame for thumb gesture scroll (2x speed)
+const SCROLL_SPEED = 20; // Pixels per frame for thumb gesture scroll (2x speed)
 
 export default function ImageGallery({
     rightHand,
@@ -46,35 +61,80 @@ export default function ImageGallery({
     const [draggedImage, setDraggedImage] = useState<GalleryImage | null>(null);
     const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
     const [isThumbScrolling, setIsThumbScrolling] = useState<'up' | 'down' | null>(null);
-    const galleryRef = useRef<HTMLDivElement>(null);
-    const lastPinchState = useRef(false);
-    const pinchStartY = useRef(0);
-    const scrollStartY = useRef(0);
 
-    // Handle thumbs up/down scroll for right hand
+    const galleryRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const lastPinchState = useRef(false);
+
+    const lastThumbActionTime = useRef(0);
+    const lastSelectedId = useRef<string | null>(null);
+
+    // Keep track of last selected image
+    useEffect(() => {
+        if (selectedImage) {
+            lastSelectedId.current = selectedImage.id;
+        }
+    }, [selectedImage]);
+
+    // Handle thumbs up/down for next/prev image
     useEffect(() => {
         if (!rightHand || draggedImage) {
             setIsThumbScrolling(null);
             return;
         }
 
-        const galleryRect = galleryRef.current?.getBoundingClientRect();
-        if (!galleryRect) return;
-
-        const maxScroll = Math.max(0, GALLERY_IMAGES.length * 140 - (galleryRect.height - 60));
+        const now = Date.now();
+        if (now - lastThumbActionTime.current < 1000) return; // 1 second cooldown
 
         if (rightHand.isThumbsUp) {
-            setIsThumbScrolling('up');
-            setScrollY(prev => Math.max(0, prev - SCROLL_SPEED));
+            // Select Next Image
+            setIsThumbScrolling('down'); // Visual feedback direction
+            lastThumbActionTime.current = now;
+
+            let currentIndex = -1;
+            if (selectedImage) {
+                currentIndex = GALLERY_IMAGES.findIndex(img => img.id === selectedImage.id);
+            } else if (lastSelectedId.current) {
+                currentIndex = GALLERY_IMAGES.findIndex(img => img.id === lastSelectedId.current);
+            }
+
+            const nextIndex = currentIndex + 1 < GALLERY_IMAGES.length ? currentIndex + 1 : 0;
+            const nextImage = GALLERY_IMAGES[nextIndex];
+
+            onImageSelect(nextImage);
+
+            // Scroll to make it visible
+            // Approximate height of item + gap = 140px
+            const targetScroll = Math.max(0, nextIndex * 140 - 100);
+            setScrollY(targetScroll);
+
         } else if (rightHand.isThumbsDown) {
-            setIsThumbScrolling('down');
-            setScrollY(prev => Math.min(maxScroll, prev + SCROLL_SPEED));
+            // Select Previous Image
+            setIsThumbScrolling('up'); // Visual feedback direction
+            lastThumbActionTime.current = now;
+
+            let currentIndex = 0;
+            if (selectedImage) {
+                currentIndex = GALLERY_IMAGES.findIndex(img => img.id === selectedImage.id);
+            } else if (lastSelectedId.current) {
+                currentIndex = GALLERY_IMAGES.findIndex(img => img.id === lastSelectedId.current);
+            }
+
+            const prevIndex = currentIndex - 1 >= 0 ? currentIndex - 1 : GALLERY_IMAGES.length - 1;
+            const prevImage = GALLERY_IMAGES[prevIndex];
+
+            onImageSelect(prevImage);
+
+            // Scroll to make it visible
+            const targetScroll = Math.max(0, prevIndex * 140 - 100);
+            setScrollY(targetScroll);
+
         } else {
             setIsThumbScrolling(null);
         }
-    }, [rightHand, draggedImage]);
+    }, [rightHand, draggedImage, selectedImage, onImageSelect]);
 
-    // Handle pinch-to-drag in gallery (keep existing pinch logic for selecting images)
+    // Handle pinch-to-drag in gallery
     useEffect(() => {
         if (!rightHand || draggedImage) return;
         // Skip if doing thumb gesture
@@ -93,13 +153,33 @@ export default function ImageGallery({
         if (rightHand.isPinching && isInGallery) {
             if (!lastPinchState.current) {
                 // Start of pinch - check if on an image
-                const relY = pinchY - galleryRect.top + scrollY;
-                const imageIndex = Math.floor(relY / 140);
+                // Use elementFromPoint to find the image under the pinch
+                // We temporarily hide the cursor/hand to find the element
+                const element = document.elementFromPoint(pinchX, pinchY);
+                const imageContainer = element?.closest('[data-image-id]');
 
-                if (imageIndex >= 0 && imageIndex < GALLERY_IMAGES.length) {
-                    setDraggedImage(GALLERY_IMAGES[imageIndex]);
-                    setDragPosition({ x: pinchX, y: pinchY });
-                    setIsDragging(true);
+                if (imageContainer) {
+                    const id = imageContainer.getAttribute('data-image-id');
+                    const image = GALLERY_IMAGES.find(img => img.id === id);
+                    if (image) {
+                        setDraggedImage(image);
+                        setDragPosition({ x: pinchX, y: pinchY });
+                        setIsDragging(true);
+                    }
+                } else {
+                    // Fallback to approximate calculation if elementFromPoint fails
+                    // This is less accurate but works if the pointer events are blocked
+                    const relY = pinchY - galleryRect.top + scrollY;
+                    // Estimate height based on width (approx 16/10 aspect ratio + padding)
+                    const itemHeight = (galleryRect.width - 24) * (10 / 16) + 12;
+                    const imageIndex = Math.floor(relY / itemHeight);
+
+                    if (imageIndex >= 0 && imageIndex < GALLERY_IMAGES.length) {
+                        // Only select if we haven't found it via elementFromPoint
+                        // setDraggedImage(GALLERY_IMAGES[imageIndex]);
+                        // setDragPosition({ x: pinchX, y: pinchY });
+                        // setIsDragging(true);
+                    }
                 }
             }
         }
@@ -144,10 +224,12 @@ export default function ImageGallery({
             pinchY >= galleryRect.top && pinchY <= galleryRect.bottom;
 
         if (isInGallery) {
-            const relY = pinchY - galleryRect.top + scrollY;
-            const imageIndex = Math.floor(relY / 140);
-            if (imageIndex >= 0 && imageIndex < GALLERY_IMAGES.length) {
-                setHoveredImage(GALLERY_IMAGES[imageIndex].id);
+            const element = document.elementFromPoint(pinchX, pinchY);
+            const imageContainer = element?.closest('[data-image-id]');
+
+            if (imageContainer) {
+                const id = imageContainer.getAttribute('data-image-id');
+                setHoveredImage(id || null);
             } else {
                 setHoveredImage(null);
             }
@@ -161,7 +243,7 @@ export default function ImageGallery({
             <div className="absolute right-0 top-0 bottom-0 w-1/4 bg-black/40 backdrop-blur-md border-l border-white/10 flex flex-col z-20">
                 <div className="p-4 border-b border-white/10">
                     <h2 className="text-white/90 font-medium text-sm tracking-wide">Gallery</h2>
-                    <p className="text-white/50 text-xs mt-1">👍 Scroll up · 👎 Scroll down</p>
+                    <p className="text-white/50 text-xs mt-1">👍 Next · 👎 Prev</p>
                 </div>
 
                 {/* Scroll indicator - top */}
@@ -181,6 +263,7 @@ export default function ImageGallery({
                     className="flex-1 overflow-hidden relative"
                 >
                     <motion.div
+                        ref={contentRef}
                         className="p-3 space-y-3"
                         animate={{ y: -scrollY }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -188,6 +271,7 @@ export default function ImageGallery({
                         {GALLERY_IMAGES.map((image) => (
                             <motion.div
                                 key={image.id}
+                                data-image-id={image.id}
                                 className={`relative rounded-lg overflow-hidden cursor-pointer ${selectedImage?.id === image.id ? 'ring-2 ring-white/60' : ''
                                     }`}
                                 animate={{
