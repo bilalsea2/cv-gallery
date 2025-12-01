@@ -22,10 +22,10 @@ interface ImageGalleryProps {
 // To add your own images, place them in public/gallery/ with names like:
 // image1.jpg, image2.png, project-screenshot.jpg, certificate.pdf, etc.
 const GALLERY_IMAGES: GalleryImage[] = [
-    { id: '1', src: '/gallery/image1.jpg', title: 'codeforces' },
-    { id: '2', src: '/gallery/image2.jpg', title: 'kep.uz' },
-    { id: '3', src: '/gallery/image3.jpg', title: 'acmp.ru' },
-    { id: '4', src: '/gallery/image4.jpg', title: 'linux' },
+    { id: '1', src: '/gallery/image4.jpg', title: 'linux' },
+    { id: '2', src: '/gallery/image1.jpg', title: 'codeforces' },
+    { id: '3', src: '/gallery/image2.jpg', title: 'kep.uz' },
+    { id: '4', src: '/gallery/image3.jpg', title: 'acmp.ru' },
     { id: '5', src: '/gallery/image5.jpg', title: 'olympiad 1' },
     { id: '6', src: '/gallery/image6.jpg', title: 'olympiad 2' },
     { id: '7', src: '/gallery/image7.jpg', title: 'olympiad 3' },
