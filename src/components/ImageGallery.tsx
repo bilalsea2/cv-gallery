@@ -22,29 +22,13 @@ interface ImageGalleryProps {
 // To add your own images, place them in public/gallery/ with names like:
 // image1.jpg, image2.png, project-screenshot.jpg, certificate.pdf, etc.
 const GALLERY_IMAGES: GalleryImage[] = [
-    { id: '1', src: '/gallery/image4.jpg', title: 'linux' },
-    { id: '2', src: '/gallery/image1.jpg', title: 'codeforces' },
-    { id: '3', src: '/gallery/image2.jpg', title: 'kep.uz' },
-    { id: '4', src: '/gallery/image3.jpg', title: 'acmp.ru' },
-    { id: '5', src: '/gallery/image5.jpg', title: 'olympiad 1' },
-    { id: '6', src: '/gallery/image6.jpg', title: 'olympiad 2' },
-    { id: '7', src: '/gallery/image7.jpg', title: 'olympiad 3' },
-    { id: '8', src: '/gallery/image8.jpg', title: 'sarmolabs' },
-    { id: '9', src: '/gallery/image9.jpg', title: 'presTechAward' },
-    { id: '10', src: '/gallery/image10.jpg', title: 'peony.uz' },
-    { id: '11', src: '/gallery/image11.gif', title: 'hackathon' },
-    { id: '12', src: '/gallery/image12.jpg', title: 'github' },
-    { id: '13', src: '/gallery/image13.jpg', title: 'almaty' },
-    { id: '14', src: '/gallery/image14.jpg', title: 'marathons' },
-    { id: '15', src: '/gallery/image15.jpg', title: 'marathons' },
-    { id: '16', src: '/gallery/image16.jpg', title: 'marathons' },
-    { id: '17', src: '/gallery/image17.jpg', title: 'run' },
-    { id: '18', src: '/gallery/image18.jpg', title: 'run' },
-    { id: '19', src: '/gallery/image19.jpg', title: 'run' },
-    { id: '20', src: '/gallery/image20.jpg', title: 'run' },
-    { id: '21', src: '/gallery/image21.jpg', title: 'run' },
-    { id: '22', src: '/gallery/image22.jpg', title: 'run' },
-    { id: '23', src: '/gallery/image23.jpg', title: 'run' },
+    { id: '1', src: '/gallery/image1.gif', title: 'nature' },
+    { id: '2', src: '/gallery/image2.jpg', title: 'chameleon' },
+    { id: '3', src: '/gallery/image3.gif', title: 'cute' },
+    { id: '4', src: '/gallery/image4.gif', title: 'harmony'},
+    { id: '5', src: '/gallery/image5.gif', title: 'wind'},
+    { id: '6', src: '/gallery/image6.gif', title: 'blob'},
+    { id: '7', src: 'gallery/image7.gif', title: 'thanks for watching'},
 ];
 
 const SCROLL_SPEED = 20; // Pixels per frame for thumb gesture scroll (2x speed)
