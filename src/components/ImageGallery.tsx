@@ -20,7 +20,7 @@ interface ImageGalleryProps {
 
 // Images are loaded from public/gallery/ folder
 // To add your own images, place them in public/gallery/ with names like:
-// image1.jpg, image2.png, project-screenshot.jpg, certificate.pdf, etc.
+// image1.jpg, image2.gif, project-screenshot.jpg, etc.
 const GALLERY_IMAGES: GalleryImage[] = [
     { id: '1', src: '/gallery/image1.gif', title: 'nature' },
     { id: '2', src: '/gallery/image2.jpg', title: 'chameleon' },
