@@ -48,5 +48,5 @@ next-env.d.ts
 Thumbs.db
 
 # Gallery images (user's custom images)
-public/gallery/*
+public/gallery/applications
 !public/gallery/.gitkeep
